@@ -5,13 +5,16 @@ import Logo from "@/components/Logo";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Home = () => {
   return (
     <>
       <MaxWidthWrapper className="hero-bg lg:min-h-screen">
         <nav className="w-full py-10">
-          <Logo />
+          <Link to={"/"}>
+            <Logo />
+          </Link>
         </nav>
 
         <section className="text-center text-gray-700 py-10 md:py-20 flex flex-col items-center justify-center">
@@ -39,8 +42,14 @@ const Home = () => {
           </ul>
 
           <div>
-            <Button className="mr-5 bg-blue-500">Get Started</Button>
-            <Button variant="ghost">Join a Room</Button>
+            <Link to={"/register"}>
+              <Button className="mr-5 bg-blue-500 hover:bg-blue-600">
+                Get Started
+              </Button>
+            </Link>
+            <Link to={"/login"}>
+              <Button variant="ghost">Join a Room</Button>
+            </Link>
           </div>
         </section>
       </MaxWidthWrapper>
