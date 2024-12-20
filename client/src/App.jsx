@@ -3,6 +3,8 @@ import { RouterProvider } from "react-router";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import AuthSuccess from "./components/AuthSuccess";
+import Logo from "./components/Logo";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -17,6 +19,14 @@ const App = () => {
     {
       path: "/login",
       element: <Login />,
+    },
+    {
+      path: "/dashboard",
+      element: <Logo />,
+    },
+    {
+      path: "/auth-success",
+      element: <AuthSuccess />,
     },
   ]);
 
