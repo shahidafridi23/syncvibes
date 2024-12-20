@@ -3,8 +3,13 @@ import { Button } from "./ui/button";
 
 const GoogleAuth = ({ btnText }) => {
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleGoogleAuth = () => {
+    window.open(`${import.meta.env.VITE_SERVER_URL}/auth/google`, "_self");
+  };
+
   return (
-    <Button className="max-w-sm mx-auto w-full">
+    <Button onClick={handleGoogleAuth} className="max-w-sm mx-auto w-full">
       {isLoading ? null : (
         <svg
           className="mr-2 h-4 w-4"
