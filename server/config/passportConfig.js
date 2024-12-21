@@ -20,6 +20,7 @@ passport.use(
         if (!user) {
           user = await prisma.user.create({
             data: {
+              username: profile.emails[0].value.split("@")[0],
               name: profile.displayName,
               email: profile.emails[0].value,
               googleId: profile.id,
