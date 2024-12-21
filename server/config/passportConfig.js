@@ -1,5 +1,6 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import prisma from "../db/db.config.js";
 
 passport.use(
   new GoogleStrategy(
@@ -10,16 +11,21 @@ passport.use(
     },
     async (accessToken, refeshToken, profile, done) => {
       try {
-        let user = {}; //Todo: fetch user from database
+        let user = await prisma.user.findUnique({
+          where: {
+            googleId: profile.id,
+          },
+        });
 
         if (!user) {
-          // user = await User.create({
-          //   googleId: profile.id,
-          //   name: profile.displayName,
-          //   email: profile.emails[0].value,
-          //   profilePic: profile.photos[0].value,
-          // });
-          user = {}; //Todo: Create user and update in user variable
+          user = await prisma.user.create({
+            data: {
+              name: profile.displayName,
+              email: profile.emails[0].value,
+              googleId: profile.id,
+              profileImage: profile.photos[0].value,
+            },
+          });
         }
 
         done(null, user);
