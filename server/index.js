@@ -6,12 +6,16 @@ import passport from "./config/passportConfig.js";
 
 const app = express();
 
+//middlewares
+app.use(express.json());
+
 //initializing passport
 app.use(passport.initialize());
 
 //routes
 app.use("/auth", authRoutes);
 
+//wakeup route
 app.get("/wakeup", (req, res) => {
   res.send("server is wokeup");
 });
