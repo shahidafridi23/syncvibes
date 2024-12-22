@@ -1,6 +1,7 @@
 import "dotenv/config";
 
 import express from "express";
+import cors from "cors";
 import authRoutes from "./routes/auth.js";
 import passport from "./config/passportConfig.js";
 
@@ -8,6 +9,11 @@ const app = express();
 
 //middlewares
 app.use(express.json());
+app.use(
+  cors({
+    origin: [process.env.CLIENT_URL],
+  })
+);
 
 //initializing passport
 app.use(passport.initialize());

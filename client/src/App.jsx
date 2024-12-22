@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import AuthSuccess from "./components/AuthSuccess";
 import Logo from "./components/Logo";
+import { AuthProvider } from "./contexts/AuthContext";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -14,19 +15,35 @@ const App = () => {
     },
     {
       path: "/register",
-      element: <Register />,
+      element: (
+        <AuthProvider>
+          <Register />
+        </AuthProvider>
+      ),
     },
     {
       path: "/login",
-      element: <Login />,
-    },
-    {
-      path: "/dashboard",
-      element: <Logo />,
+      element: (
+        <AuthProvider>
+          <Login />
+        </AuthProvider>
+      ),
     },
     {
       path: "/auth-success",
-      element: <AuthSuccess />,
+      element: (
+        <AuthProvider>
+          <AuthSuccess />
+        </AuthProvider>
+      ),
+    },
+    {
+      path: "/:username",
+      element: (
+        <AuthProvider>
+          <Logo />
+        </AuthProvider>
+      ),
     },
   ]);
 

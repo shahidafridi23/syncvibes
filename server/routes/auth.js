@@ -1,7 +1,8 @@
 import express from "express";
 import passport from "passport";
 import jwt from "jsonwebtoken";
-import { login, register } from "../controllers/auth.js";
+import { getProfile, login, register } from "../controllers/auth.js";
+import authenticate from "../middlewares/auth.js";
 
 const router = express.Router();
 
@@ -31,5 +32,7 @@ router.get(
 router.post("/login", login);
 
 router.post("/register", register);
+
+router.get("/profile", authenticate, getProfile);
 
 export default router;

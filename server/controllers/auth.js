@@ -120,3 +120,22 @@ export const login = async (req, res) => {
     res.status(500).json({ message: "something went wrong!" });
   }
 };
+
+export const getProfile = async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.user.id,
+      },
+    });
+
+    res.status(200).json({
+      id: user.id,
+      username: user.username,
+      name: user.name,
+      profileImage: user.profileImage,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "something went wrong." });
+  }
+};

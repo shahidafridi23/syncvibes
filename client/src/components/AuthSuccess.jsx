@@ -1,22 +1,28 @@
+import { useAuth } from "@/contexts/AuthContext";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AuthSuccess = () => {
+  const { authState, refreshAuth } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
-    console.log("Extracted Token:", token);
 
     if (token) {
       localStorage.setItem("authToken", token);
-      navigate("/dashboard");
+      refreshAuth();
     } else {
       console.error("Authentication failed: Token not found");
-      navigate("/login");
     }
   }, [navigate]);
+
+  if (authState.isAuthenticated) {
+    navigate(`/@${authState.user.username}`);
+  } else {
+    navigate("/login");
+  }
 
   return <div>Authenticating...</div>;
 };

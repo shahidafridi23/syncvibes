@@ -14,7 +14,10 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
+import axios from "axios";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid Email Address" }),
@@ -32,9 +35,27 @@ const Login = () => {
     },
   });
 
-  function onSubmit(values) {
-    //Todo: handling submission
-    console.log(values);
+  const navigate = useNavigate();
+
+  const { authState, refreshAuth } = useAuth();
+
+  useEffect(() => {
+    refreshAuth();
+  }, []);
+
+  async function onSubmit(values) {
+    try {
+      const response = await axios.post("/auth/login", { ...values });
+      const { message, token } = response.data;
+      localStorage.setItem("authToken", token);
+      refreshAuth();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  if (authState.isAuthenticated) {
+    navigate(`/@${authState.user.username}`);
   }
 
   return (
