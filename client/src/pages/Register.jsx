@@ -18,6 +18,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   name: z.string().min(3, { message: "Enter your full name" }),
@@ -37,6 +38,8 @@ const Register = () => {
     },
   });
 
+  const { toast } = useToast();
+
   const navigate = useNavigate();
 
   const { authState, refreshAuth } = useAuth();
@@ -51,8 +54,11 @@ const Register = () => {
       const { message, token } = response.data;
       localStorage.setItem("authToken", token);
       refreshAuth();
+      toast({ title: message });
     } catch (error) {
       console.log(error);
+      const { message } = error.response.data;
+      toast({ variant: "destructive", title: message });
     }
   }
 

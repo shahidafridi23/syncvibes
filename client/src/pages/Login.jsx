@@ -18,6 +18,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
 import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid Email Address" }),
@@ -35,6 +36,8 @@ const Login = () => {
     },
   });
 
+  const { toast } = useToast();
+
   const navigate = useNavigate();
 
   const { authState, refreshAuth } = useAuth();
@@ -49,8 +52,11 @@ const Login = () => {
       const { message, token } = response.data;
       localStorage.setItem("authToken", token);
       refreshAuth();
+      toast({ title: message });
     } catch (error) {
       console.log(error);
+      const { message } = error.response.data;
+      toast({ variant: "destructive", title: message });
     }
   }
 

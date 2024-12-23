@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import AuthSuccess from "./components/AuthSuccess";
 import Logo from "./components/Logo";
 import { AuthProvider } from "./contexts/AuthContext";
+import Dashboard from "./pages/Dashboard";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -41,7 +42,7 @@ const App = () => {
       path: "/:username",
       element: (
         <AuthProvider>
-          <Logo />
+          <Dashboard />
         </AuthProvider>
       ),
     },
