@@ -1,5 +1,5 @@
 import authenticate from "@/utils/authenticate";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
 
@@ -13,6 +13,10 @@ export const AuthProvider = ({ children }) => {
     const result = await authenticate();
     setAuthState(result);
   };
+
+  useEffect(() => {
+    refreshAuth();
+  }, []);
 
   return (
     <AuthContext.Provider value={{ authState, refreshAuth }}>

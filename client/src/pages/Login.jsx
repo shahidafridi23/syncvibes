@@ -43,8 +43,10 @@ const Login = () => {
   const { authState, refreshAuth } = useAuth();
 
   useEffect(() => {
-    refreshAuth();
-  }, []);
+    if (authState.isAuthenticated) {
+      navigate(`/@${authState.user.username}`);
+    }
+  }, [authState]);
 
   async function onSubmit(values) {
     try {
@@ -58,10 +60,6 @@ const Login = () => {
       const { message } = error.response.data;
       toast({ variant: "destructive", title: message });
     }
-  }
-
-  if (authState.isAuthenticated) {
-    navigate(`/@${authState.user.username}`);
   }
 
   return (

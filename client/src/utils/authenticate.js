@@ -5,19 +5,17 @@ const authenticate = async () => {
     const token = localStorage.getItem("authToken");
 
     if (!token) {
-      console.log("No token found.");
-      return { isAuthenticated: false, user: null };
+      throw new Error("No Token Found");
     }
 
     const response = await axios.get("/auth/profile");
 
     if (response.status !== 200) {
-      console.log("Invalid token.");
-      return { isAuthenticated: false, user: null };
+      throw new Error("Inavlid Token");
     }
 
     const userData = response.data;
-    console.log("User authenticated successfully:", userData);
+
     return { isAuthenticated: true, user: userData };
   } catch (error) {
     console.error("Authentication error:", error);

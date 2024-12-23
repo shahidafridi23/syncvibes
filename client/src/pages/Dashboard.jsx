@@ -5,17 +5,16 @@ import { useNavigate } from "react-router-dom";
 const Dashboard = () => {
   const navigate = useNavigate();
 
-  const { authState, refreshAuth } = useAuth();
+  const { authState } = useAuth();
 
   useEffect(() => {
-    refreshAuth();
-  }, []);
+    if (authState.isAuthenticated) {
+      navigate(`/@${authState.user.username}`);
+    } else {
+      navigate("/login");
+    }
+  }, [authState]);
 
-  if (authState.isAuthenticated) {
-    navigate(`/@${authState.user.username}`);
-  } else {
-    navigate("/login");
-  }
   return <div>Dashboard</div>;
 };
 
