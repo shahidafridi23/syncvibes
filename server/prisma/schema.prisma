@@ -22,5 +22,15 @@ model User {
   password String?
   googleId String? @unique
   profileImage String?
+  room Room[]
+  createdAt DateTime @default(now())
+}
+
+model Room{
+  code String @id
+  title String
+  description String
+  user User @relation(fields: [user_id], references: [id])
+  user_id String
   createdAt DateTime @default(now())
 }
