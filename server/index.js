@@ -2,8 +2,10 @@ import "dotenv/config";
 
 import express from "express";
 import cors from "cors";
-import authRoutes from "./routes/auth.js";
 import passport from "./config/passportConfig.js";
+import authenticate from "./middlewares/auth.js";
+import authRoutes from "./routes/auth.js";
+import roomRoutes from "./routes/room.js";
 
 const app = express();
 
@@ -20,6 +22,7 @@ app.use(passport.initialize());
 
 //routes
 app.use("/auth", authRoutes);
+app.use("/room", authenticate, roomRoutes);
 
 //wakeup route
 app.get("/wakeup", (req, res) => {
