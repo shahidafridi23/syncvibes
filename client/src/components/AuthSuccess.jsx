@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const AuthSuccess = () => {
-  const { authState, refreshAuth } = useAuth();
+  const { authState, getAuthData } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -12,7 +12,7 @@ const AuthSuccess = () => {
 
     if (token) {
       localStorage.setItem("authToken", token);
-      refreshAuth();
+      getAuthData();
     } else {
       console.error("Authentication failed: Token not found");
     }

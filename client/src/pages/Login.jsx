@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
 import Loder from "@/components/Loder";
@@ -45,6 +45,8 @@ const Login = () => {
 
   const { user, loading } = authState;
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     if (user) {
       navigate(`/@${user.username}`);
@@ -57,6 +59,7 @@ const Login = () => {
 
   async function onSubmit(values) {
     try {
+      setIsSubmitting(true);
       const response = await axios.post("/auth/login", { ...values });
       const { message, token } = response.data;
       localStorage.setItem("authToken", token);
@@ -66,6 +69,8 @@ const Login = () => {
       console.log(error);
       const { message } = error.response.data;
       toast({ variant: "destructive", title: message });
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -120,7 +125,12 @@ const Login = () => {
               )}
             />
 
-            <Button className="w-full">Log In</Button>
+            <Button className="w-full">
+              {isSubmitting && (
+                <div className="w-5 h-5 border-4 border-t-transparent border-white border-solid rounded-full animate-spin"></div>
+              )}
+              Log In
+            </Button>
           </form>
         </Form>
 

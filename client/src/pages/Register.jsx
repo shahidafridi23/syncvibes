@@ -15,10 +15,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
+import Loder from "@/components/Loder";
 
 const formSchema = z.object({
   name: z.string().min(3, { message: "Enter your full name" }),
@@ -46,6 +47,8 @@ const Register = () => {
 
   const { user, loading } = authState;
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     if (user) {
       navigate(`/@${user.username}`);
@@ -58,6 +61,7 @@ const Register = () => {
 
   async function onSubmit(values) {
     try {
+      setIsSubmitting(true);
       const response = await axios.post("/auth/register", { ...values });
       const { message, token } = response.data;
       localStorage.setItem("authToken", token);
@@ -67,6 +71,8 @@ const Register = () => {
       console.log(error);
       const { message } = error.response.data;
       toast({ variant: "destructive", title: message });
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -133,7 +139,12 @@ const Register = () => {
               )}
             />
 
-            <Button className="w-full">Create an account</Button>
+            <Button className="w-full">
+              {isSubmitting && (
+                <div className="w-5 h-5 border-4 border-t-transparent border-white border-solid rounded-full animate-spin"></div>
+              )}
+              Create an account
+            </Button>
           </form>
         </Form>
 
