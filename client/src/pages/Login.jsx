@@ -19,6 +19,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
+import Loder from "@/components/Loder";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid Email Address" }),
@@ -40,20 +41,26 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  const { authState, refreshAuth } = useAuth();
+  const { authState, getAuthData } = useAuth();
+
+  const { user, loading } = authState;
 
   useEffect(() => {
-    if (authState.isAuthenticated) {
-      navigate(`/@${authState.user.username}`);
+    if (user) {
+      navigate(`/@${user.username}`);
     }
   }, [authState]);
+
+  if (loading) {
+    return <Loder />;
+  }
 
   async function onSubmit(values) {
     try {
       const response = await axios.post("/auth/login", { ...values });
       const { message, token } = response.data;
       localStorage.setItem("authToken", token);
-      refreshAuth();
+      getAuthData();
       toast({ title: message });
     } catch (error) {
       console.log(error);

@@ -42,20 +42,26 @@ const Register = () => {
 
   const navigate = useNavigate();
 
-  const { authState, refreshAuth } = useAuth();
+  const { authState, getAuthData } = useAuth();
+
+  const { user, loading } = authState;
 
   useEffect(() => {
-    if (authState.isAuthenticated) {
-      navigate(`/@${authState.user.username}`);
+    if (user) {
+      navigate(`/@${user.username}`);
     }
   }, [authState]);
+
+  if (loading) {
+    return <Loder />;
+  }
 
   async function onSubmit(values) {
     try {
       const response = await axios.post("/auth/register", { ...values });
       const { message, token } = response.data;
       localStorage.setItem("authToken", token);
-      refreshAuth();
+      getAuthData();
       toast({ title: message });
     } catch (error) {
       console.log(error);

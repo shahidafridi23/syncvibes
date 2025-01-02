@@ -15,11 +15,9 @@ const authenticate = async () => {
     }
 
     const userData = response.data;
-
-    return { isAuthenticated: true, user: userData };
+    return userData;
   } catch (error) {
-    console.error("Authentication error:", error);
-    return { isAuthenticated: false, user: null };
+    throw error;
   }
 };
 

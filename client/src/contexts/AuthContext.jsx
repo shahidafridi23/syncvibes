@@ -5,21 +5,35 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [authState, setAuthState] = useState({
-    isAuthenticated: false,
     user: null,
+    loading: true,
+    err: false,
   });
 
-  const refreshAuth = async () => {
-    const result = await authenticate();
-    setAuthState(result);
+  const getAuthData = async () => {
+    try {
+      const user = await authenticate();
+      setAuthState({ user: user, loading: false, err: false });
+    } catch (error) {
+      setAuthState({ user: null, loading: false, err: true });
+      throw error;
+    }
   };
 
   useEffect(() => {
-    refreshAuth();
+    const fetchAuthData = async () => {
+      try {
+        await getAuthData();
+      } catch (error) {
+        console.log();
+      }
+    };
+
+    fetchAuthData();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ authState, refreshAuth }}>
+    <AuthContext.Provider value={{ authState, setAuthState, getAuthData }}>
       {children}
     </AuthContext.Provider>
   );

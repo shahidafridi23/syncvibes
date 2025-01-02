@@ -1,3 +1,4 @@
+import Loder from "@/components/Loder";
 import Logo from "@/components/Logo";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import {
@@ -17,17 +18,28 @@ import { useNavigate } from "react-router-dom";
 const Dashboard = () => {
   const navigate = useNavigate();
 
-  const { authState } = useAuth();
+  const { authState, setAuthState } = useAuth();
+
+  const { user, err, loading } = authState;
 
   useEffect(() => {
-    if (authState.isAuthenticated) {
-      navigate(`/@${authState.user.username}`);
-    } else {
-      navigate("/login");
+    if (err) {
+      navigate(`/login`);
     }
   }, [authState]);
 
-  const { user } = authState;
+  if (loading) {
+    return <Loder />;
+  }
+
+  if (!user) {
+    return <div>No User Found</div>;
+  }
+
+  const handleLogOut = () => {
+    localStorage.removeItem("authToken");
+    setAuthState({ user: null, loading: false, err: true });
+  };
 
   return (
     <MaxWidthWrapper>
@@ -50,7 +62,10 @@ const Dashboard = () => {
               </div>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer">
+            <DropdownMenuItem
+              className="cursor-pointer"
+              onClick={() => handleLogOut()}
+            >
               <LogOut />
               <span>Log out</span>
             </DropdownMenuItem>
