@@ -1,3 +1,4 @@
+import CreateRoom from "@/components/CreateRoom";
 import Loder from "@/components/Loder";
 import Logo from "@/components/Logo";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
@@ -35,6 +36,10 @@ const Dashboard = () => {
         <Logo />
         <UserProfile {...user} />
       </nav>
+
+      <section>
+        <CreateRoom />
+      </section>
     </MaxWidthWrapper>
   );
 };
