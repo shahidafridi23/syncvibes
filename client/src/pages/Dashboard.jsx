@@ -1,4 +1,5 @@
 import CreateRoom from "@/components/CreateRoom";
+import JoinRoom from "@/components/JoinRoom";
 import Loder from "@/components/Loder";
 import Logo from "@/components/Logo";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
@@ -37,8 +38,16 @@ const Dashboard = () => {
         <UserProfile {...user} />
       </nav>
 
-      <section>
-        <CreateRoom />
+      <section className="flex items-center justify-center">
+        <div className="md:flex justify-between w-60 md:w-full my-32 md:my-0">
+          <JoinRoom />
+          <div className="md:hidden flex items-center justify-center my-4">
+            <div className="h-px w-full bg-gray-300"></div>
+            <span className="mx-4 text-gray-400">Or</span>
+            <div className="h-px w-full bg-gray-300"></div>
+          </div>
+          <CreateRoom />
+        </div>
       </section>
     </MaxWidthWrapper>
   );
