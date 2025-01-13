@@ -14,7 +14,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import axios from "axios";
@@ -41,36 +41,24 @@ const Register = () => {
 
   const { toast } = useToast();
 
-  const navigate = useNavigate();
-
-  const { authState, getAuthData } = useAuth();
-
-  const { user, loading } = authState;
+  const { setAuthData } = useAuth();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (user) {
-      navigate(`/@${user.username}`);
-    }
-  }, [authState]);
-
-  if (loading) {
-    return <Loder />;
-  }
 
   async function onSubmit(values) {
     try {
       setIsSubmitting(true);
       const response = await axios.post("/auth/register", { ...values });
-      const { message, token } = response.data;
+      const { token, user, message } = response.data;
+
       localStorage.setItem("authToken", token);
-      getAuthData();
+
+      setAuthData({ token, user });
       toast({ title: message });
     } catch (error) {
-      console.log(error);
       const { message } = error.response.data;
       toast({ variant: "destructive", title: message });
+      throw error;
     } finally {
       setIsSubmitting(false);
     }

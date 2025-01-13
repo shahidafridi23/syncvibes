@@ -9,13 +9,17 @@ import {
 import UserAvatar from "@/components/UserAvatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const UserProfile = ({ ...user }) => {
-  const { setAuthState } = useAuth();
+  const { setAuthData } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogOut = () => {
     localStorage.removeItem("authToken");
-    setAuthState({ user: null, loading: false, err: true });
+
+    setAuthData(null);
+    navigate("/login");
   };
 
   return (

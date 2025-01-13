@@ -45,16 +45,14 @@ const App = () => {
           <Dashboard />
         </AuthProvider>
       ),
-      children: [
-        {
-          path: ":code",
-          element: (
-            <AuthProvider>
-              <MusicRoom />
-            </AuthProvider>
-          ),
-        },
-      ],
+    },
+    {
+      path: "/:username/:code",
+      element: (
+        <AuthProvider>
+          <MusicRoom />
+        </AuthProvider>
+      ),
     },
   ]);
 

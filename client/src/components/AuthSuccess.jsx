@@ -1,28 +1,33 @@
 import { useAuth } from "@/contexts/AuthContext";
+import authenticate from "@/utils/authenticate";
 import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 const AuthSuccess = () => {
-  const { authState, getAuthData } = useAuth();
-  const navigate = useNavigate();
+  const { setAuthData } = useAuth();
+
+  const getDataWithGoogle = async () => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token");
+
+      if (!token) {
+        throw new Error("No token found in google url");
+      }
+
+      localStorage.setItem("authToken", token);
+
+      const data = await authenticate();
+
+      setAuthData(data);
+    } catch (error) {
+      setAuthData(null);
+      throw error;
+    }
+  };
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-
-    if (token) {
-      localStorage.setItem("authToken", token);
-      getAuthData();
-    } else {
-      console.error("Authentication failed: Token not found");
-    }
-  }, [navigate]);
-
-  if (authState.isAuthenticated) {
-    navigate(`/@${authState.user.username}`);
-  } else {
-    navigate("/login");
-  }
+    getDataWithGoogle();
+  }, []);
 
   return <div>Authenticating...</div>;
 };

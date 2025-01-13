@@ -8,29 +8,14 @@ import UserProfile from "@/components/UserProfile";
 
 import { useAuth } from "@/contexts/AuthContext";
 
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-
 const Dashboard = () => {
-  const navigate = useNavigate();
+  const { authData } = useAuth();
 
-  const { authState } = useAuth();
-
-  const { user, err, loading } = authState;
-
-  useEffect(() => {
-    if (err) {
-      navigate(`/login`);
-    }
-  }, [authState]);
-
-  if (loading) {
+  if (!authData) {
     return <Loder />;
   }
 
-  if (!user) {
-    return <div>No User Found</div>;
-  }
+  const { user } = authData;
 
   return (
     <MaxWidthWrapper>

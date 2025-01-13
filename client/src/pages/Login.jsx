@@ -14,12 +14,11 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
-import Loder from "@/components/Loder";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid Email Address" }),
@@ -39,36 +38,24 @@ const Login = () => {
 
   const { toast } = useToast();
 
-  const navigate = useNavigate();
-
-  const { authState, getAuthData } = useAuth();
-
-  const { user, loading } = authState;
+  const { setAuthData } = useAuth();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (user) {
-      navigate(`/@${user.username}`);
-    }
-  }, [authState]);
-
-  if (loading) {
-    return <Loder />;
-  }
 
   async function onSubmit(values) {
     try {
       setIsSubmitting(true);
       const response = await axios.post("/auth/login", { ...values });
-      const { message, token } = response.data;
+      const { token, user, message } = response.data;
+
       localStorage.setItem("authToken", token);
-      getAuthData();
+
+      setAuthData({ token, user });
       toast({ title: message });
     } catch (error) {
-      console.log(error);
       const { message } = error.response.data;
       toast({ variant: "destructive", title: message });
+      throw error;
     } finally {
       setIsSubmitting(false);
     }

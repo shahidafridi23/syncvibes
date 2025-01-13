@@ -51,6 +51,7 @@ export const register = async (req, res) => {
     res.status(201).json({
       message: "User registered successfully",
       token,
+      user: { ...newUser },
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -106,6 +107,7 @@ export const login = async (req, res) => {
     res.status(200).json({
       message: "Login successful",
       token,
+      user: { ...user },
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

@@ -15,7 +15,7 @@ const authenticate = async () => {
     }
 
     const userData = response.data;
-    return userData;
+    return { user: { ...userData }, token };
   } catch (error) {
     throw error;
   }
