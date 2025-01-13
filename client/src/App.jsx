@@ -4,9 +4,9 @@ import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import AuthSuccess from "./components/AuthSuccess";
-import Logo from "./components/Logo";
 import { AuthProvider } from "./contexts/AuthContext";
 import Dashboard from "./pages/Dashboard";
+import MusicRoom from "./pages/MusicRoom";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -45,6 +45,16 @@ const App = () => {
           <Dashboard />
         </AuthProvider>
       ),
+      children: [
+        {
+          path: ":code",
+          element: (
+            <AuthProvider>
+              <MusicRoom />
+            </AuthProvider>
+          ),
+        },
+      ],
     },
   ]);
 
