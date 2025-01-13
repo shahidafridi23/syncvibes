@@ -71,7 +71,7 @@ const CreateRoom = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="bg-blue-500 hover:bg-blue-400">
+        <Button className="bg-blue-500 hover:bg-blue-400 mt-auto ml-auto w-full md:w-fit">
           <Plus /> Create New Room
         </Button>
       </DialogTrigger>
