@@ -7,6 +7,7 @@ import AuthSuccess from "./components/AuthSuccess";
 import { AuthProvider } from "./contexts/AuthContext";
 import Dashboard from "./pages/Dashboard";
 import MusicRoom from "./pages/MusicRoom";
+import { SocketProvider } from "./contexts/SocketContext";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -50,7 +51,9 @@ const App = () => {
       path: "/:username/:code",
       element: (
         <AuthProvider>
-          <MusicRoom />
+          <SocketProvider>
+            <MusicRoom />
+          </SocketProvider>
         </AuthProvider>
       ),
     },

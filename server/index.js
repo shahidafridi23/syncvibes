@@ -1,11 +1,12 @@
 import "dotenv/config";
-
+import http from "http";
 import express from "express";
 import cors from "cors";
 import passport from "./config/passportConfig.js";
 import authenticate from "./middlewares/auth.js";
 import authRoutes from "./routes/auth.js";
 import roomRoutes from "./routes/room.js";
+import SocketService from "./services/socket.js";
 
 const app = express();
 
@@ -29,8 +30,18 @@ app.get("/wakeup", (req, res) => {
   res.send("server is wokeup");
 });
 
-const port = process.env.PORT || 3000;
+async function init() {
+  const httpServer = http.createServer(app);
+  const port = process.env.PORT || 3000;
+  const socketService = new SocketService();
 
-app.listen(port, () => {
-  console.log(`server is running at port ${port}`);
-});
+  socketService.io.attach(httpServer);
+
+  httpServer.listen(port, () => {
+    console.log(`httpServer is running at port:${port}`);
+  });
+
+  socketService.initListeners();
+}
+
+init();
