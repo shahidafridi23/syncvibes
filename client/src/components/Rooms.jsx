@@ -4,6 +4,7 @@ import { Skeleton } from "./ui/skeleton";
 import { Box } from "lucide-react";
 import colors from "@/utils/colors";
 import InviteFriends from "./InviteFriends";
+import OpenRoom from "./OpenRoom";
 
 const Rooms = () => {
   const [rooms, setRooms] = useState([]);
@@ -73,7 +74,10 @@ const Rooms = () => {
 
               <p className="mt-3 text-xs text-gray-500">{room.description}</p>
 
-              <InviteFriends code={room.code} />
+              <div className="flex items-center justify-between">
+                <InviteFriends code={room.code} />
+                <OpenRoom code={room.code} />
+              </div>
             </div>
           );
         })}

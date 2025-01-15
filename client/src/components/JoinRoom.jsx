@@ -11,6 +11,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Button } from "./ui/button";
+import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   code: z
@@ -27,9 +30,21 @@ const JoinRoom = () => {
     },
   });
 
+  const { toast } = useToast();
+  const navigate = useNavigate();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   async function onSubmit(values) {
-    console.log(values);
+    const { code } = values;
+    try {
+      const response = await axios.post(`/room/join/${code.toUpperCase()}`);
+      const { room } = response.data.data;
+      navigate(`/@${room.username}/${code}`);
+    } catch (error) {
+      const { message } = error.response.data;
+      toast({ variant: "destructive", title: message });
+      throw error;
+    }
   }
 
   return (
