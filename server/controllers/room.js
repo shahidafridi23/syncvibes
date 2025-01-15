@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { generateUniqueCode } from "../utils/generateCode.js";
 import prisma from "../db/db.config.js";
+import { redisDB } from "../db/redisdb.js";
+import { ttl } from "../utils/constants.js";
 
 const roomSchema = z.object({
   title: z
@@ -62,7 +64,7 @@ export const getRooms = async (req, res) => {
 
 export const getRoomByCode = async (req, res) => {
   try {
-    const user_id = req.user.id;
+    const { id: user_id, username } = req.user;
     const { code } = req.params;
 
     const room = await prisma.room.findFirst({
@@ -72,9 +74,71 @@ export const getRoomByCode = async (req, res) => {
       },
     });
 
-    res.status(200).json({ message: `Room by code ${code}`, room });
+    if (!room) {
+      return res.status(404).json({ message: "Room is not found." });
+    }
+
+    res.status(200).json({
+      message: `Room by code ${code}`,
+      data: { user_id, username, room },
+    });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Something went wrong" });
+  }
+};
+
+export const initRoom = async (req, res) => {
+  try {
+    const { id, username } = req.user;
+    const { code } = req.params;
+
+    const room = await prisma.room.findUnique({
+      where: {
+        user_id: id,
+        code,
+      },
+    });
+
+    if (!room) {
+      return res.status(404).json({ message: "Room is not found." });
+    }
+
+    const data = {
+      user_id: room.user_id,
+      username,
+      code: room.code,
+      title: room.title,
+      description: room.title,
+      createdAt: new Date(room.createdAt).toISOString(),
+    };
+
+    await redisDB.hset(`room:${code}`, data);
+    await redisDB.expire(`room:${code}`, ttl);
+
+    res.status(200).json({
+      message: `${room.title} Room has opened.`,
+      data: { user_id: id, username, code },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "something went wrong.." });
+  }
+};
+
+export const joinRoom = async (req, res) => {
+  try {
+    const { code } = req.params;
+
+    const room = await redisDB.hgetall(`room:${code}`);
+
+    if (!room) {
+      return res.status(404).json({ message: "This Room is not opened yet." });
+    }
+
+    res.status(200).json({ message: "Room is present", data: { room } });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "something went wrong." });
   }
 };
