@@ -109,7 +109,7 @@ export const initRoom = async (req, res) => {
       username,
       code: room.code,
       title: room.title,
-      description: room.title,
+      description: room.description,
       createdAt: new Date(room.createdAt).toISOString(),
     };
 
