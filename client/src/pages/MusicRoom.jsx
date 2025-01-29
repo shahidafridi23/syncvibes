@@ -1,6 +1,7 @@
 import Loder from "@/components/Loder";
 import Logo from "@/components/Logo";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSocket } from "@/contexts/SocketContext";
 import { useToast } from "@/hooks/use-toast";
@@ -69,6 +70,7 @@ const MusicRoom = () => {
     <MaxWidthWrapper>
       <nav className="w-full py-10 flex items-center justify-between">
         <Logo />
+        <Button variant="destructive">Leave</Button>
       </nav>
     </MaxWidthWrapper>
   );
