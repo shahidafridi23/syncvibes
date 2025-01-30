@@ -27,7 +27,7 @@ app.use("/room", authenticate, roomRoutes);
 
 //wakeup route
 app.get("/wakeup", (req, res) => {
-  res.send("server is wokeup");
+  res.status(200).json({ message: "server is wokeup", wokeup: true });
 });
 
 async function init() {
