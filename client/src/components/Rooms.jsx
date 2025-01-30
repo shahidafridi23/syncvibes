@@ -5,27 +5,10 @@ import { Box } from "lucide-react";
 import colors from "@/utils/colors";
 import InviteFriends from "./InviteFriends";
 import OpenRoom from "./OpenRoom";
+import { useRoom } from "@/contexts/RoomContext";
 
 const Rooms = () => {
-  const [rooms, setRooms] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function getRooms() {
-      try {
-        const response = await axios.get("/room");
-        const { rooms } = response.data;
-
-        setRooms(rooms);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    getRooms();
-  }, []);
+  const { rooms, isLoading } = useRoom();
 
   if (isLoading) {
     return (

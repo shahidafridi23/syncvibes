@@ -23,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import axios from "axios";
 import { useToast } from "@/hooks/use-toast";
+import { useRoom } from "@/contexts/RoomContext";
 
 const formSchema = z.object({
   title: z
@@ -44,6 +45,8 @@ const CreateRoom = () => {
     },
   });
 
+  const { rooms, setRooms } = useRoom();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -53,10 +56,11 @@ const CreateRoom = () => {
     try {
       setIsSubmitting(true);
 
-      const room = await axios.post("/room", { ...values });
-      console.log(room);
+      const response = await axios.post("/room", { ...values });
+      const { room, message } = response?.data;
 
-      const message = room?.data?.message;
+      setRooms((prev) => [...prev, room]);
+
       toast({ title: message });
     } catch (error) {
       const { message } = error.response.data;
