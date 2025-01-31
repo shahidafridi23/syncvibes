@@ -6,8 +6,36 @@ import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+import WokeUp from "@/components/WokeUp";
+import { useToast } from "@/hooks/use-toast";
 
 const Home = () => {
+  const [isWokeUp, setIsWokeUp] = useState(true);
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const wakeUp = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_SERVER_URL}/wakeup`
+        );
+
+        const { message, wokeup } = response?.data;
+        if (wokeup) {
+          setIsWokeUp(false);
+        }
+        toast({ title: message });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    wakeUp();
+  }, []);
+
   return (
     <>
       <MaxWidthWrapper className="hero-bg lg:min-h-screen">
@@ -62,6 +90,7 @@ const Home = () => {
       <MaxWidthWrapper className={"bg-gray-50 py-5 md:py-10 px-10"}>
         <FrequentlyAskedQuestions />
       </MaxWidthWrapper>
+      <WokeUp isWokeUp={isWokeUp} />
     </>
   );
 };
