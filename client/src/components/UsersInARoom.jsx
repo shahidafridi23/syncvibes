@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 import UserAvatar from "./UserAvatar";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
+import { Skeleton } from "./ui/skeleton";
 
 const UsersInARoom = ({ code }) => {
   const { socket } = useSocket();
   const [users, setUsers] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -17,6 +19,8 @@ const UsersInARoom = ({ code }) => {
         setUsers(users);
       } catch (error) {
         console.log(error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -28,7 +32,7 @@ const UsersInARoom = ({ code }) => {
       socket.on("user-joined", ({ user }) => {
         toast({ title: `${user.name} Joined This Room!` });
         setUsers((prevUsers) => {
-          if (prevUsers.some((u) => u.username === user.username)) {
+          if (prevUsers?.some((u) => u.username === user.username)) {
             return prevUsers;
           }
           return [...prevUsers, user];
@@ -40,6 +44,35 @@ const UsersInARoom = ({ code }) => {
       };
     }
   }, [socket]);
+
+  if (isLoading) {
+    return (
+      <>
+        <Skeleton className={"w-40 h-8 mb-5"} />
+        <div className="flex items-center mb-2">
+          <Skeleton className={"w-12 h-12 rounded-full"} />
+          <div className="pl-1">
+            <Skeleton className={"w-32 h-4 mb-2"} />
+            <Skeleton className={"w-32 h-4"} />
+          </div>
+        </div>
+        <div className="flex items-center mb-2">
+          <Skeleton className={"w-12 h-12 rounded-full"} />
+          <div className="pl-1">
+            <Skeleton className={"w-32 h-4 mb-2"} />
+            <Skeleton className={"w-32 h-4"} />
+          </div>
+        </div>
+        <div className="flex items-center mb-2">
+          <Skeleton className={"w-12 h-12 rounded-full"} />
+          <div className="pl-1">
+            <Skeleton className={"w-32 h-4 mb-2"} />
+            <Skeleton className={"w-32 h-4"} />
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <div>
