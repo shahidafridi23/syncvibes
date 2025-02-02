@@ -1,8 +1,6 @@
 import { Server } from "socket.io";
-import { Redis } from "ioredis";
-
-const pub = new Redis(process.env.UPSTASH_REDIS_URL);
-const sub = new Redis(process.env.UPSTASH_REDIS_URL);
+import { redisDB } from "../db/redisdb.js";
+import { ttl } from "../utils/constants.js";
 
 class SocketService {
   _io;
@@ -16,8 +14,6 @@ class SocketService {
         origin: "*",
       },
     });
-
-    sub.subscribe("JoinedUsers:room:*");
   }
 
   initListeners() {
@@ -27,25 +23,33 @@ class SocketService {
     io.on("connect", (socket) => {
       console.log("New user is connected to the socket server:", socket.id);
 
-      socket.on("joinRoom", async (code, user) => {
-        socket.join(code);
-        console.log(`user:${user.username} join in room:${code}`);
+      socket.on("join-room", async ({ roomCode, user }) => {
+        await this.joinRoom(socket, roomCode, user);
+      });
 
-        await pub.publish(
-          `JoinedUsers:room:${code}`,
-          JSON.stringify({
-            user,
-          })
-        );
+      socket.on("disconnect", () => {
+        console.log("User disconnected:", socket.id);
       });
     });
+  }
 
-    sub.on("user", (channel, user) => {
-      const roomCode = channel.split(":")[2];
-      if (channel === "JoinedUsers:room:*") {
-        io.to(roomCode).emit("user", user);
-      }
-    });
+  async joinRoom(socket, roomCode, user) {
+    const { id: userId } = user;
+
+    console.log("joinuser", user);
+
+    await redisDB.sadd(`room:${roomCode}:users`, userId);
+    await redisDB.hset(`room:${roomCode}:user:${userId}`, user);
+    await redisDB.expire(`room:${roomCode}:users`, ttl);
+    await redisDB.expire(`room:${roomCode}:user:${userId}`, ttl);
+
+    socket.join(roomCode);
+
+    this._io
+      .to(roomCode)
+      .emit("user-joined", { user, message: `User ${userId} joined.` });
+
+    console.log(`User ${userId} joined room: ${roomCode}`);
   }
 
   get io() {

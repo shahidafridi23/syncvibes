@@ -142,3 +142,30 @@ export const joinRoom = async (req, res) => {
     res.status(500).json({ message: "something went wrong." });
   }
 };
+
+export const getUsersInThisRoom = async (req, res) => {
+  try {
+    const { code } = req.params;
+    console.log(code);
+
+    const userIds = await redisDB.smembers(`room:${code}:users`);
+
+    if (!userIds.length) {
+      return res
+        .status(404)
+        .json({ message: "No users found in this room.", users: [] });
+    }
+
+    const users = await Promise.all(
+      userIds.map(async (userId) => {
+        const user = await redisDB.hgetall(`room:${code}:user:${userId}`);
+        return user;
+      })
+    );
+
+    res.status(200).json({ message: "All Users in this room", users });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "something went wrong." });
+  }
+};
