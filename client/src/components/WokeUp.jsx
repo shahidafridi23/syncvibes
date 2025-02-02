@@ -7,8 +7,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useEffect, useState } from "react";
 
 const WokeUp = ({ isWokeUp }) => {
+  const [timeLeft, setTimeLeft] = useState(30);
+
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
   return (
     <AlertDialog open={isWokeUp}>
       <AlertDialogTrigger asChild />
@@ -18,7 +31,7 @@ const WokeUp = ({ isWokeUp }) => {
           <AlertDialogDescription>
             We are using free plan of render,{" "}
             <span className="font-extrabold">
-              it will take at least 30 seconds
+              it will take at least <span>{timeLeft}</span> seconds
             </span>{" "}
             to wake up the server. please wait a moment.
           </AlertDialogDescription>
