@@ -5,8 +5,6 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import getYouTubeVideoId from "@/utils/getVideoId";
-import { GetVideoDetails } from "youtube-search-api";
-import axios from "axios";
 
 const formSchema = z.object({
   url: z
@@ -29,13 +27,8 @@ const AddSong = () => {
 
   async function onAdd({ url }) {
     try {
-      console.log(url);
       const extractedId = await getYouTubeVideoId(url);
-      console.log(extractedId);
-      const videoDetails = await axios.get(
-        `http://youtube.com/get_video_info?video_id=${extractedId}`
-      );
-      console.log(videoDetails);
+      //get youtube video deatils from this extractedId
     } catch (error) {
       console.log(error);
     }
