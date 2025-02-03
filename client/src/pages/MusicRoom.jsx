@@ -1,3 +1,4 @@
+import AddSong from "@/components/AddSong";
 import Loder from "@/components/Loder";
 import Logo from "@/components/Logo";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
@@ -74,8 +75,8 @@ const MusicRoom = () => {
         <div className="col-1 border-l md:col-start-auto md:col-end-[-1] md:row-[1]">
           Now Playing
         </div>
-        <div className="col-2 ">
-          <div>Add Songs</div>
+        <div className="col-2 lg:px-10 ">
+          <AddSong />
         </div>
         <div className="col-3 border-r hidden lg:block lg:col-start-1 lg:row-start-1">
           <div className="room-detils">
