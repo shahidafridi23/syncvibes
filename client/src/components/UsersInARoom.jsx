@@ -45,7 +45,7 @@ const UsersInARoom = ({ code }) => {
     }
   }, [socket]);
 
-  if (isLoading) {
+  if (isLoading || users.length < 1) {
     return (
       <>
         <Skeleton className={"w-40 h-8 mb-5"} />
