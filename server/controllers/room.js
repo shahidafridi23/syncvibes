@@ -146,7 +146,6 @@ export const joinRoom = async (req, res) => {
 export const getUsersInThisRoom = async (req, res) => {
   try {
     const { code } = req.params;
-    console.log(code);
 
     const userIds = await redisDB.smembers(`room:${code}:users`);
 
@@ -164,6 +163,33 @@ export const getUsersInThisRoom = async (req, res) => {
     );
 
     res.status(200).json({ message: "All Users in this room", users });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "something went wrong." });
+  }
+};
+
+export const getSongsInThisRoom = async (req, res) => {
+  try {
+    const { code } = req.params;
+
+    console.log("hitte");
+
+    const roomSongsKey = `room:${code}:songs`;
+
+    const songIds = await redisDB.zrange(roomSongsKey, 0, -1, { rev: true });
+
+    const songs = await Promise.all(
+      songIds.map(async (songId) => {
+        const song = await redisDB.hgetall(`room:${code}:song:${songId}`);
+        return {
+          ...song,
+          score: await redisDB.zscore(roomSongsKey, songId),
+        };
+      })
+    );
+
+    res.status(200).json({ message: "All Songs in this room", songs });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "something went wrong." });

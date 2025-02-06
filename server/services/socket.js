@@ -27,6 +27,10 @@ class SocketService {
         await this.joinRoom(socket, roomCode, user);
       });
 
+      socket.on("add-song", async ({ roomCode, song }) => {
+        await this.addSong(socket, roomCode, song);
+      });
+
       socket.on("disconnect", () => {
         console.log("User disconnected:", socket.id);
       });
@@ -50,6 +54,33 @@ class SocketService {
       .emit("user-joined", { user, message: `User ${userId} joined.` });
 
     console.log(`User ${userId} joined room: ${roomCode}`);
+  }
+
+  async addSong(socket, roomCode, song) {
+    const songKey = `room:${roomCode}:song:${song.songId}`;
+    const roomSongsKey = `room:${roomCode}:songs`;
+
+    const isSongAlreadyAdded = await redisDB.exists(songKey);
+    console.log("songid", isSongAlreadyAdded);
+
+    if (isSongAlreadyAdded) {
+      return socket.emit("song-add-failed", {
+        message: `Song is already added!`,
+      });
+    }
+
+    console.log("reached here");
+
+    await redisDB.hset(songKey, song);
+    await redisDB.zadd(roomSongsKey, { score: 0, member: song.songId });
+    await redisDB.expire(songKey, ttl);
+    await redisDB.expire(roomSongsKey, ttl);
+
+    this._io
+      .to(roomCode)
+      .emit("song-added", { song, message: `song added succesfully!` });
+
+    console.log(`Song added in this room : ${roomCode}`);
   }
 
   get io() {

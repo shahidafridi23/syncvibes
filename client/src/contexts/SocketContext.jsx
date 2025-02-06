@@ -31,8 +31,17 @@ export const SocketProvider = ({ children }) => {
     [socket]
   );
 
+  const addSong = useCallback(
+    (roomCode, song) => {
+      if (socket) {
+        socket.emit("add-song", { roomCode, song });
+      }
+    },
+    [socket]
+  );
+
   return (
-    <SocketContext.Provider value={{ socket, joinRoom }}>
+    <SocketContext.Provider value={{ socket, joinRoom, addSong }}>
       {children}
     </SocketContext.Provider>
   );

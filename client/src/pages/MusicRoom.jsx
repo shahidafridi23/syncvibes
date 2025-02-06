@@ -2,6 +2,7 @@ import AddSong from "@/components/AddSong";
 import Loder from "@/components/Loder";
 import Logo from "@/components/Logo";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
+import SongStack from "@/components/SongStack";
 import { Button } from "@/components/ui/button";
 import UsersInARoom from "@/components/UsersInARoom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -71,12 +72,13 @@ const MusicRoom = () => {
         <Button variant="destructive">Leave</Button>
       </nav>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[25%_1fr_1fr]">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[25%_1fr_30%]">
         <div className="col-1 border-l md:col-start-auto md:col-end-[-1] md:row-[1]">
           Now Playing
         </div>
         <div className="col-2 lg:px-10 ">
-          <AddSong />
+          <AddSong roomCode={room?.code} />
+          <SongStack roomCode={room?.code} />
         </div>
         <div className="col-3 border-r hidden lg:block lg:col-start-1 lg:row-start-1">
           <div className="room-detils">

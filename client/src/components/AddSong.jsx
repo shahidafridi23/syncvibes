@@ -5,6 +5,10 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import getYouTubeVideoId from "@/utils/getVideoId";
+import axios from "axios";
+import { useSocket } from "@/contexts/SocketContext";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   url: z
@@ -15,9 +19,10 @@ const formSchema = z.object({
     ),
 });
 
-const AddSong = () => {
-  //https://www.youtube.com/watch?v=86VhvSe80LQ
-  //https://youtu.be/86VhvSe80LQ?si=2eTh8-X8ouVej1Qj
+const AddSong = ({ roomCode }) => {
+  const { socket, addSong } = useSocket();
+  const { toast } = useToast();
+  const [isAdding, setIsAdding] = useState(false);
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -25,12 +30,43 @@ const AddSong = () => {
     },
   });
 
+  useEffect(() => {
+    if (socket) {
+      socket.on("song-add-failed", ({ message }) => {
+        toast({ title: message, variant: "destructive" });
+      });
+
+      return () => {
+        socket.off("song-add-failed");
+      };
+    }
+  }, [socket]);
+
   async function onAdd({ url }) {
     try {
+      setIsAdding(true);
       const extractedId = await getYouTubeVideoId(url);
-      //get youtube video deatils from this extractedId
+      const videoDetails = await axios.get(
+        `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${extractedId}&format=json`
+      );
+
+      const { title, thumbnail_url } = videoDetails.data;
+
+      const song = {
+        songId: extractedId,
+        title,
+        thumbnail: thumbnail_url,
+        upvote: 0,
+        downvote: 0,
+      };
+
+      console.log(song);
+
+      await addSong(roomCode, song);
     } catch (error) {
       console.log(error);
+    } finally {
+      setIsAdding(false);
     }
   }
 
@@ -51,12 +87,14 @@ const AddSong = () => {
               </FormItem>
             )}
           />
-          <Button className="bg-blue-500 hover:bg-blue-400">Add</Button>
+          <Button className="bg-blue-500 hover:bg-blue-400">
+            {isAdding ? (
+              <div className="w-5 h-5 border-4 border-t-transparent border-white border-solid rounded-full animate-spin"></div>
+            ) : (
+              <span>Add</span>
+            )}
+          </Button>
         </div>
-        <img
-          src="https://img.youtube.com/vi/kKznez09td4/hqdefault.jpg"
-          alt="hjsgd"
-        />
       </form>
     </Form>
   );

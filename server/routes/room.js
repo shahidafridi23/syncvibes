@@ -3,6 +3,7 @@ import {
   createRoom,
   getRoomByCode,
   getRooms,
+  getSongsInThisRoom,
   getUsersInThisRoom,
   initRoom,
   joinRoom,
@@ -17,6 +18,7 @@ router.get("/:code", getRoomByCode);
 //redisRoutes
 router.post("/:code", initRoom);
 router.get("/:code/users", getUsersInThisRoom);
+router.get("/:code/songs", getSongsInThisRoom);
 router.post("/join/:code", joinRoom);
 
 export default router;
