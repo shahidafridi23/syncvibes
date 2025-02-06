@@ -4,6 +4,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Skeleton } from "./ui/skeleton";
 import { Card } from "./ui/card";
+import SongVoting from "./SongVoting";
 
 const SongStack = ({ roomCode }) => {
   const { socket } = useSocket();
@@ -43,32 +44,39 @@ const SongStack = ({ roomCode }) => {
     }
   }, [socket, songs]);
 
-  console.log("songs", songs);
-
   if (isLoading) {
     return (
       <>
-        <Skeleton className={"w-20 h-10"} />
+        <Skeleton className={"w-32 h-10 my-6"} />
+        <Skeleton className={"my-5 w-full h-24"} />
+        <Skeleton className={"my-5 w-full h-24"} />
       </>
     );
   }
 
   return (
-    <div>
-      <h2>Songs Stack</h2>
+    <div className="my-6">
+      <h2 className="font-bold text-lg">Songs Stack</h2>
 
-      {songs?.map((song) => {
-        return (
-          <Card className="w-full grid grid-cols-4 gap-3 rounded-sm p-2 my-5">
-            <div className="thumbnail w-full h-full  bg-green-500">
-              <img src={song.thumbnail} alt={song.title} className="" />
-            </div>
-            <div className="details col-span-3">
-              <p className="line-clamp-2 leading-tight">{song.title}</p>
-            </div>
-          </Card>
-        );
-      })}
+      {songs?.length < 1 ? (
+        <div className="my-2">No Songs Added</div>
+      ) : (
+        songs?.map((song) => {
+          return (
+            <Card className="w-full grid grid-cols-4 gap-3 rounded-sm p-2 my-5">
+              <div className="thumbnail w-full h-full  ">
+                <img src={song.thumbnail} alt={song.title} className="" />
+              </div>
+              <div className="details col-span-3">
+                <p className="line-clamp-2 leading-tight text-gray-500 text-sm">
+                  {song.title}
+                </p>
+                <SongVoting roomCode={roomCode} songId={song.songId} />
+              </div>
+            </Card>
+          );
+        })
+      )}
     </div>
   );
 };
