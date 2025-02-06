@@ -1,9 +1,9 @@
 import AddSong from "@/components/AddSong";
+import LeaveRoom from "@/components/LeaveRoom";
 import Loder from "@/components/Loder";
 import Logo from "@/components/Logo";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import SongStack from "@/components/SongStack";
-import { Button } from "@/components/ui/button";
 import UsersInARoom from "@/components/UsersInARoom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSocket } from "@/contexts/SocketContext";
@@ -69,7 +69,7 @@ const MusicRoom = () => {
     <MaxWidthWrapper>
       <nav className="w-full py-10 flex items-center justify-between">
         <Logo />
-        <Button variant="destructive">Leave</Button>
+        <LeaveRoom roomCode={room?.code} />
       </nav>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[25%_1fr_30%]">
