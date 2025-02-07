@@ -15,7 +15,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const MusicRoom = () => {
   const { authData } = useAuth();
-  const { joinRoom, users } = useSocket();
+  const { joinRoom } = useSocket();
 
   if (!authData) {
     return <Loder />;
@@ -78,7 +78,7 @@ const MusicRoom = () => {
         </div>
         <div className="col-2 lg:px-10 ">
           <AddSong roomCode={room?.code} />
-          <SongStack roomCode={room?.code} />
+          <SongStack roomCode={room?.code} userId={user?.id} />
         </div>
         <div className="col-3 border-r hidden lg:block lg:col-start-1 lg:row-start-1">
           <div className="room-detils">

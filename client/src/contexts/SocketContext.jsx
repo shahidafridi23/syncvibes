@@ -40,8 +40,28 @@ export const SocketProvider = ({ children }) => {
     [socket]
   );
 
+  const upvoteSong = useCallback(
+    (roomCode, songId, userId) => {
+      if (socket) {
+        socket.emit("upvote-song", { roomCode, songId, userId });
+      }
+    },
+    [socket]
+  );
+
+  const downvoteSong = useCallback(
+    (roomCode, songId, userId) => {
+      if (socket) {
+        socket.emit("downvote-song", { roomCode, songId, userId });
+      }
+    },
+    [socket]
+  );
+
   return (
-    <SocketContext.Provider value={{ socket, joinRoom, addSong }}>
+    <SocketContext.Provider
+      value={{ socket, joinRoom, addSong, upvoteSong, downvoteSong }}
+    >
       {children}
     </SocketContext.Provider>
   );

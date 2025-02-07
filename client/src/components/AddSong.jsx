@@ -58,9 +58,8 @@ const AddSong = ({ roomCode }) => {
         thumbnail: thumbnail_url,
         upvote: 0,
         downvote: 0,
+        score: 0,
       };
-
-      console.log(song);
 
       await addSong(roomCode, song);
     } catch (error) {

@@ -45,7 +45,7 @@ const UsersInARoom = ({ code }) => {
     }
   }, [socket]);
 
-  if (isLoading || users.length < 1) {
+  if (isLoading) {
     return (
       <>
         <Skeleton className={"w-40 h-8 mb-5"} />
@@ -80,7 +80,7 @@ const UsersInARoom = ({ code }) => {
       {users?.map((user) => {
         return (
           <div key={user.id} className="flex items-center mb-2">
-            <UserAvatar url={user.profileImage} name={user.name} />
+            <UserAvatar url={user?.profileImage ?? ""} name={user.name} />
             <div className="pl-1">
               <h3 className="font-semibold">{user.name}</h3>
               <h4 className=" text-gray-500">@{user.username}</h4>

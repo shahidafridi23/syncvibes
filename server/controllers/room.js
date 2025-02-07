@@ -172,8 +172,7 @@ export const getUsersInThisRoom = async (req, res) => {
 export const getSongsInThisRoom = async (req, res) => {
   try {
     const { code } = req.params;
-
-    console.log("hitte");
+    const { id: userId } = req.user;
 
     const roomSongsKey = `room:${code}:songs`;
 
@@ -181,9 +180,13 @@ export const getSongsInThisRoom = async (req, res) => {
 
     const songs = await Promise.all(
       songIds.map(async (songId) => {
+        const upvoteKey = `room:${code}:song:${songId}:upvoters`;
+        const downvoteKey = `room:${code}:song:${songId}:downvoters`;
         const song = await redisDB.hgetall(`room:${code}:song:${songId}`);
         return {
           ...song,
+          upvote: await redisDB.sismember(upvoteKey, userId),
+          downvote: await redisDB.sismember(downvoteKey, userId),
           score: await redisDB.zscore(roomSongsKey, songId),
         };
       })

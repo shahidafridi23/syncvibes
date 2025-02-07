@@ -31,6 +31,14 @@ class SocketService {
         await this.addSong(socket, roomCode, song);
       });
 
+      socket.on("upvote-song", async ({ roomCode, songId, userId }) => {
+        await this.upvoteSong(socket, roomCode, songId, userId);
+      });
+
+      socket.on("downvote-song", async ({ roomCode, songId, userId }) => {
+        await this.downvoteSong(socket, roomCode, songId, userId);
+      });
+
       socket.on("disconnect", () => {
         console.log("User disconnected:", socket.id);
       });
@@ -39,8 +47,6 @@ class SocketService {
 
   async joinRoom(socket, roomCode, user) {
     const { id: userId } = user;
-
-    console.log("joinuser", user);
 
     await redisDB.sadd(`room:${roomCode}:users`, userId);
     await redisDB.hset(`room:${roomCode}:user:${userId}`, user);
@@ -61,15 +67,12 @@ class SocketService {
     const roomSongsKey = `room:${roomCode}:songs`;
 
     const isSongAlreadyAdded = await redisDB.exists(songKey);
-    console.log("songid", isSongAlreadyAdded);
 
     if (isSongAlreadyAdded) {
       return socket.emit("song-add-failed", {
         message: `Song is already added!`,
       });
     }
-
-    console.log("reached here");
 
     await redisDB.hset(songKey, song);
     await redisDB.zadd(roomSongsKey, { score: 0, member: song.songId });
@@ -81,6 +84,78 @@ class SocketService {
       .emit("song-added", { song, message: `song added succesfully!` });
 
     console.log(`Song added in this room : ${roomCode}`);
+  }
+
+  async upvoteSong(socket, roomCode, songId, userId) {
+    const upvoteKey = `room:${roomCode}:song:${songId}:upvoters`;
+    const downvoteKey = `room:${roomCode}:song:${songId}:downvoters`;
+    const songScoreKey = `room:${roomCode}:songs`;
+
+    const hasUpvoted = await redisDB.sismember(upvoteKey, userId);
+    if (hasUpvoted) {
+      return socket.emit("song-upvote-failed", {
+        message: `You have already upvoted this song!`,
+      });
+    }
+
+    const wasDownvoted = await redisDB.srem(downvoteKey, userId);
+
+    if (wasDownvoted) {
+      await redisDB.zincrby(songScoreKey, 1, songId);
+    }
+
+    await redisDB.sadd(upvoteKey, userId);
+    await redisDB.expire(upvoteKey, ttl);
+
+    const score = await redisDB.zincrby(songScoreKey, 1, songId);
+
+    socket.emit("song-vote-response", {
+      songId,
+      upvote: true,
+      downvote: false,
+      score,
+      message: "You have upvoted this song!",
+    });
+    socket.to(roomCode).emit("song-upvoted", {
+      songId,
+      score,
+    });
+  }
+
+  async downvoteSong(socket, roomCode, songId, userId) {
+    const upvoteKey = `room:${roomCode}:song:${songId}:upvoters`;
+    const downvoteKey = `room:${roomCode}:song:${songId}:downvoters`;
+    const songScoreKey = `room:${roomCode}:songs`;
+
+    const hasDownvoted = await redisDB.sismember(downvoteKey, userId);
+    if (hasDownvoted) {
+      return socket.emit("song-downvote-failed", {
+        message: `You have already downvoted this song!`,
+      });
+    }
+
+    const wasUpvoted = await redisDB.srem(upvoteKey, userId);
+
+    if (wasUpvoted) {
+      await redisDB.zincrby(songScoreKey, -1, songId);
+    }
+
+    await redisDB.sadd(downvoteKey, userId);
+    await redisDB.expire(downvoteKey, ttl);
+
+    const score = await redisDB.zincrby(songScoreKey, -1, songId);
+
+    socket.emit("song-vote-response", {
+      songId,
+      upvote: false,
+      downvote: true,
+      score,
+      message: "You have downvoted this song!",
+    });
+    socket.to(roomCode).emit("song-downvoted", {
+      songId,
+      score,
+    });
   }
 
   get io() {
