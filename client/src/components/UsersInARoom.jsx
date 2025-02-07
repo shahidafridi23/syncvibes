@@ -78,12 +78,16 @@ const UsersInARoom = ({ code }) => {
     <div>
       <h2 className="text-lg font-semibold mb-5">Peple Joined</h2>
       {users?.map((user) => {
+        if (!user) return null;
         return (
           <div key={user.id} className="flex items-center mb-2">
-            <UserAvatar url={user?.profileImage ?? ""} name={user.name} />
+            <UserAvatar
+              url={user?.profileImage ?? ""}
+              name={user?.name ?? "Anonymoush"}
+            />
             <div className="pl-1">
-              <h3 className="font-semibold">{user.name}</h3>
-              <h4 className=" text-gray-500">@{user.username}</h4>
+              <h3 className="font-semibold">{user?.name}</h3>
+              <h4 className=" text-gray-500">@{user?.username}</h4>
             </div>
           </div>
         );
