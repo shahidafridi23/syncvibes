@@ -44,7 +44,7 @@ export const register = async (req, res) => {
       { id: newUser.id, username: newUser.username },
       process.env.JWT_SECRET,
       {
-        expiresIn: "1h",
+        expiresIn: "1d",
       }
     );
 
@@ -100,7 +100,7 @@ export const login = async (req, res) => {
       { id: user.id, username: user.username },
       process.env.JWT_SECRET,
       {
-        expiresIn: "1h",
+        expiresIn: "1d",
       }
     );
 

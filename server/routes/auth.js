@@ -22,7 +22,7 @@ router.get(
       { id: req.user.id, username: req.user.username },
       process.env.JWT_SECRET,
       {
-        expiresIn: "1h",
+        expiresIn: "1d",
       }
     );
     res.redirect(`${process.env.CLIENT_URL}/auth-success?token=${token}`);
