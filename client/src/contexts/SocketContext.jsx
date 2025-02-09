@@ -58,9 +58,18 @@ export const SocketProvider = ({ children }) => {
     [socket]
   );
 
+  const playNext = useCallback(
+    (roomCode) => {
+      if (socket) {
+        socket.emit("play-next", { roomCode });
+      }
+    },
+    [socket]
+  );
+
   return (
     <SocketContext.Provider
-      value={{ socket, joinRoom, addSong, upvoteSong, downvoteSong }}
+      value={{ socket, joinRoom, addSong, upvoteSong, downvoteSong, playNext }}
     >
       {children}
     </SocketContext.Provider>

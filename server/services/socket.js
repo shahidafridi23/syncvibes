@@ -39,6 +39,10 @@ class SocketService {
         await this.downvoteSong(socket, roomCode, songId, userId);
       });
 
+      socket.on("play-next", async ({ roomCode }) => {
+        await this.playNext(socket, roomCode);
+      });
+
       socket.on("disconnect", () => {
         console.log("User disconnected:", socket.id);
       });
@@ -156,6 +160,50 @@ class SocketService {
       songId,
       score,
     });
+  }
+
+  async getTopVotedSong(roomCode) {
+    const songsInRoomKey = `room:${roomCode}:songs`;
+    const [topSongId] = await redisDB.zrange(songsInRoomKey, -1, -1);
+
+    if (!topSongId) {
+      return null;
+    }
+
+    const songKey = `room:${roomCode}:song:${topSongId}`;
+
+    const song = await redisDB.hgetall(songKey);
+
+    await redisDB.zrem(songsInRoomKey, topSongId);
+    await redisDB.del(songKey);
+
+    this._io.to(roomCode).emit("top-song-removed", { songId: topSongId });
+
+    return song;
+  }
+
+  async playNext(socket, roomCode) {
+    const song = await this.getTopVotedSong(roomCode);
+
+    if (!song) {
+      return socket.emit("no-songs-in-stack", {
+        message: `No songs in the stack!`,
+      });
+    }
+
+    const startTime = Date.now();
+
+    await redisDB.set(
+      `room:${roomCode}:now_playing`,
+      JSON.stringify({ ...song, startTime })
+    );
+
+    this._io.to(roomCode).emit("now-playing", {
+      song,
+      message: `Now playing ------------------- ${song.title}`,
+    });
+
+    console.log(`currently playing : ${song.songId}`);
   }
 
   get io() {

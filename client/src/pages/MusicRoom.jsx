@@ -3,6 +3,7 @@ import LeaveRoom from "@/components/LeaveRoom";
 import Loder from "@/components/Loder";
 import Logo from "@/components/Logo";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
+import MusicPlayer from "@/components/MusicPlayer";
 import SongStack from "@/components/SongStack";
 import UsersInARoom from "@/components/UsersInARoom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -65,6 +66,8 @@ const MusicRoom = () => {
     return <Loder />;
   }
 
+  const isRoomCreator = user?.id === room?.user_id;
+
   return (
     <MaxWidthWrapper>
       <nav className="w-full py-10 flex items-center justify-between">
@@ -73,10 +76,14 @@ const MusicRoom = () => {
       </nav>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[25%_1fr_30%]">
-        <div className="col-1 border-l md:col-start-auto md:col-end-[-1] md:row-[1]">
-          Now Playing
+        <div className="col-1 md:border-l md:col-start-auto md:col-end-[-1] md:row-[1]">
+          <MusicPlayer
+            isRoomCreator={isRoomCreator}
+            roomCode={room?.code}
+            userId={user?.id}
+          />
         </div>
-        <div className="col-2 lg:px-10 ">
+        <div className="col-2 md:pr-10 lg:px-10 ">
           <AddSong roomCode={room?.code} />
           <SongStack roomCode={room?.code} userId={user?.id} />
         </div>

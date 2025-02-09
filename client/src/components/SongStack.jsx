@@ -36,7 +36,12 @@ const SongStack = ({ roomCode, userId }) => {
         });
         setSongs((prevSongs) => {
           const updatedSongs = [...prevSongs, song];
-          return updatedSongs.sort((a, b) => b.score - a.score);
+          return updatedSongs.sort((a, b) => {
+            if (b.score !== a.score) {
+              return b.score - a.score;
+            }
+            return a.songId < b.songId ? 1 : -1;
+          });
         });
       });
 
@@ -50,7 +55,12 @@ const SongStack = ({ roomCode, userId }) => {
                 ? { ...song, upvote, downvote, score }
                 : song
             );
-            return updatedSongs.sort((a, b) => b.score - a.score);
+            return updatedSongs.sort((a, b) => {
+              if (b.score !== a.score) {
+                return b.score - a.score;
+              }
+              return a.songId < b.songId ? 1 : -1;
+            });
           });
         }
       );
@@ -60,7 +70,12 @@ const SongStack = ({ roomCode, userId }) => {
           const updatedSongs = prevSongs.map((song) =>
             song.songId === songId ? { ...song, score } : song
           );
-          return updatedSongs.sort((a, b) => b.score - a.score);
+          return updatedSongs.sort((a, b) => {
+            if (b.score !== a.score) {
+              return b.score - a.score;
+            }
+            return a.songId < b.songId ? 1 : -1;
+          });
         });
       });
 
@@ -69,7 +84,12 @@ const SongStack = ({ roomCode, userId }) => {
           const updatedSongs = prevSongs.map((song) =>
             song.songId === songId ? { ...song, score } : song
           );
-          return updatedSongs.sort((a, b) => b.score - a.score);
+          return updatedSongs.sort((a, b) => {
+            if (b.score !== a.score) {
+              return b.score - a.score;
+            }
+            return a.songId < b.songId ? 1 : -1;
+          });
         });
       });
 
@@ -81,6 +101,14 @@ const SongStack = ({ roomCode, userId }) => {
         toast({ title: message, variant: "destructive" });
       });
 
+      socket.on("top-song-removed", ({ songId }) => {
+        setSongs((prevSongs) => {
+          return prevSongs.filter((song) => {
+            return song.songId !== songId;
+          });
+        });
+      });
+
       return () => {
         socket.off("song-added");
         socket.off("song-vote-response");
@@ -88,6 +116,7 @@ const SongStack = ({ roomCode, userId }) => {
         socket.off("song-downvoted");
         socket.off("song-upvote-failed");
         socket.off("song-downvote-failed");
+        socket.off("top-song-removed");
       };
     }
   }, [socket]);

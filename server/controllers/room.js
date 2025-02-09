@@ -198,3 +198,22 @@ export const getSongsInThisRoom = async (req, res) => {
     res.status(500).json({ message: "something went wrong." });
   }
 };
+
+export const getCurrentlyPlayingSong = async (req, res) => {
+  try {
+    const { code } = req.params;
+
+    const currentlyPlayingSong = await redisDB.get(`room:${code}:now_playing`);
+
+    if (!currentlyPlayingSong) {
+      throw new Error("No song currently playing!");
+    }
+
+    res
+      .status(200)
+      .json({ message: "Currently playing song", song: currentlyPlayingSong });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "something went wrong.", error });
+  }
+};
