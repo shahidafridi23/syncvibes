@@ -74,6 +74,10 @@ const UsersInARoom = ({ code }) => {
     );
   }
 
+  if (!users.length) {
+    return <div>No users in the room</div>;
+  }
+
   return (
     <div>
       <h2 className="text-lg font-semibold mb-5">Peple Joined</h2>
