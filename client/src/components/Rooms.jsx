@@ -1,5 +1,3 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
 import { Skeleton } from "./ui/skeleton";
 import { Box } from "lucide-react";
 import colors from "@/utils/colors";

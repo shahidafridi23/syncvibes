@@ -15,8 +15,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const InviteFriends = ({ code }) => {
+  const { authData } = useAuth();
+  const { user } = authData;
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = async (url) => {
@@ -28,6 +31,10 @@ const InviteFriends = ({ code }) => {
       console.log(error);
     }
   };
+
+  if (!user) {
+    return;
+  }
 
   return (
     <Dialog>
@@ -51,7 +58,9 @@ const InviteFriends = ({ code }) => {
             </Label>
             <Input
               id="link"
-              defaultValue={`${import.meta.env.VITE_CLIENT_URL}/room/${code}`}
+              defaultValue={`${import.meta.env.VITE_CLIENT_URL}/@${
+                user.username
+              }/${code}`}
               readOnly
             />
           </div>
