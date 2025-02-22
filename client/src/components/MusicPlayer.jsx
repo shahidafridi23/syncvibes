@@ -3,13 +3,14 @@ import PlayNext from "./PlayNext";
 import { useToast } from "@/hooks/use-toast";
 import { useSocket } from "@/contexts/SocketContext";
 import axios from "axios";
+import { Volume2, VolumeOff } from "lucide-react";
 const MusicPlayer = ({ isRoomCreator, roomCode, userId }) => {
   const iframeRef = useRef(null);
   const { socket } = useSocket();
   const { toast } = useToast();
-  const [isUserInteracted, setIsUserInteracted] = useState(false);
   const [currentPlayingSong, setCurrentPlayingSong] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [toggleVolume, setToggleVolume] = useState(false);
 
   useEffect(() => {
     const getCurrentlyPlayingSong = async () => {
@@ -34,6 +35,7 @@ const MusicPlayer = ({ isRoomCreator, roomCode, userId }) => {
         setIsPlaying(true);
         toast({ title: message });
       });
+
       socket.on("no-songs-in-stack", ({ message }) => {
         toast({ title: message, variant: "destructive" });
       });
@@ -46,17 +48,24 @@ const MusicPlayer = ({ isRoomCreator, roomCode, userId }) => {
   }, [socket]);
 
   useEffect(() => {
-    if (isUserInteracted && iframeRef.current) {
+    if (toggleVolume && iframeRef.current) {
       const iframe = iframeRef.current;
       iframe.contentWindow.postMessage(
         '{"event":"command","func":"unMute","args":""}',
         "*"
       );
     }
-  }, [isUserInteracted]);
+    if (!toggleVolume && iframeRef.current) {
+      const iframe = iframeRef.current;
+      iframe.contentWindow.postMessage(
+        '{"event":"command","func":"mute","args":""}',
+        "*"
+      );
+    }
+  }, [toggleVolume]);
 
-  const handleUserInteraction = () => {
-    setIsUserInteracted((prev) => !prev);
+  const handleToggleVolume = () => {
+    setToggleVolume((prev) => !prev);
   };
 
   return (
@@ -78,12 +87,18 @@ const MusicPlayer = ({ isRoomCreator, roomCode, userId }) => {
           )}
 
           <div
-            onClick={handleUserInteraction}
+            onClick={handleToggleVolume}
             className="absolute inset-0 pointer-events-auto flex items-center justify-center group"
           >
-            <span className="text-lg text-white hidden group-hover:block cursor-pointer">
-              Unmute
-            </span>
+            {toggleVolume ? (
+              <span className="text-lg text-white hidden group-hover:block cursor-pointer">
+                <Volume2 />
+              </span>
+            ) : (
+              <span className="text-lg text-white hidden group-hover:block cursor-pointer">
+                <VolumeOff />
+              </span>
+            )}
           </div>
         </div>
       ) : (
