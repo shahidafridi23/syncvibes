@@ -198,6 +198,8 @@ class SocketService {
       JSON.stringify({ ...song, startTime })
     );
 
+    await redisDB.expire(`room:${roomCode}:now_playing`, 20 * 60);
+
     this._io.to(roomCode).emit("now-playing", {
       song,
       message: `Now playing ------------------- ${song.title}`,
