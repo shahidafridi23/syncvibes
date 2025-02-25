@@ -72,7 +72,11 @@ const MusicRoom = () => {
     <MaxWidthWrapper>
       <nav className="w-full py-10 flex items-center justify-between">
         <Logo />
-        <LeaveRoom roomCode={room?.code} />
+        <LeaveRoom
+          roomCode={room?.code}
+          userId={user?.id}
+          username={user?.username}
+        />
       </nav>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[25%_1fr_30%]">

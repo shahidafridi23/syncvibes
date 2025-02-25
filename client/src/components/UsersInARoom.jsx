@@ -39,8 +39,16 @@ const UsersInARoom = ({ code }) => {
         });
       });
 
+      socket.on("left-room", ({ username, message }) => {
+        toast({ title: message });
+        setUsers((prevUsers) =>
+          prevUsers?.filter((u) => u.username !== username)
+        );
+      });
+
       return () => {
         socket.off("user-joined");
+        socket.off("left-room");
       };
     }
   }, [socket]);
@@ -74,7 +82,7 @@ const UsersInARoom = ({ code }) => {
     );
   }
 
-  if (!users.length) {
+  if (!users) {
     return <div>No users in the room</div>;
   }
 

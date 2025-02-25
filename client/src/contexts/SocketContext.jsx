@@ -67,9 +67,26 @@ export const SocketProvider = ({ children }) => {
     [socket]
   );
 
+  const leaveRoom = useCallback(
+    (roomCode, userId, username) => {
+      if (socket) {
+        socket.emit("leave-room", { roomCode, userId, username });
+      }
+    },
+    [socket]
+  );
+
   return (
     <SocketContext.Provider
-      value={{ socket, joinRoom, addSong, upvoteSong, downvoteSong, playNext }}
+      value={{
+        socket,
+        joinRoom,
+        addSong,
+        upvoteSong,
+        downvoteSong,
+        playNext,
+        leaveRoom,
+      }}
     >
       {children}
     </SocketContext.Provider>

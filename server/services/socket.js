@@ -43,6 +43,10 @@ class SocketService {
         await this.playNext(socket, roomCode);
       });
 
+      socket.on("leave-room", async ({ roomCode, userId, username }) => {
+        await this.leaveRoom(socket, roomCode, userId, username);
+      });
+
       socket.on("disconnect", () => {
         console.log("User disconnected:", socket.id);
       });
@@ -206,6 +210,27 @@ class SocketService {
     });
 
     console.log(`currently playing : ${song.songId}`);
+  }
+
+  async leaveRoom(socket, roomCode, userId, username) {
+    const roomKey = `room:${roomCode}:users`;
+    const userKey = `room:${roomCode}:user:${userId}`;
+
+    const isMember = await redisDB.sismember(roomKey, userId);
+    if (!isMember) {
+      console.log(`User ${userId} is not in room ${roomCode}`);
+      return;
+    }
+
+    await redisDB.srem(roomKey, userId);
+    await redisDB.del(userKey);
+
+    socket.leave(roomCode);
+
+    this._io.to(roomCode).emit("left-room", {
+      username,
+      message: `${username} left this room`,
+    });
   }
 
   get io() {
